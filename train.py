@@ -107,13 +107,14 @@ def train_model(resume_from=None):
         max_length=Config.MAX_LENGTH,
         dropout=Config.DROPOUT
     )
-    torch.compile(model)
+    model = torch.compile(model)
     model = model.to(device)
 
 
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    
+    print(f"Model w/ {total_params:,} total parameters & ({trainable_params:,} trainable)")
+
     optimizer = optim.AdamW(
         model.parameters(),
         lr=Config.LEARNING_RATE,
@@ -163,10 +164,10 @@ def train_model(resume_from=None):
             epoch_samples += input_ids.size(0)
             global_step += 1
             
-            # log 
+            # log
             if global_step % Config.LOG_INTERVAL == 0:
                 avg_loss = epoch_loss / (batch_idx + 1)
-                print(f"poch {epoch+1}/{Config.MAX_EPOCHS}, "
+                print(f"Epoch {epoch+1}/{Config.MAX_EPOCHS}, "
                       f"Step {global_step}, "
                       f"batch {batch_idx+1}/{len(train_loader)}, "
                       f"loss: {loss.item():.4f}, "

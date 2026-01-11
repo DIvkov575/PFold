@@ -149,8 +149,7 @@ def create_diverse_splits(file_sequences: Dict[str, List[Dict]],
     test_files = all_files[n_train_files + n_val_files:] # leftovers
     
     print(f"file splits: {len(train_files)} train, {len(val_files)} val, {len(test_files)} test")
-    
-    # TODO: these can probably be modularized and abstracted
+
     # training set
     train_sequences = []
     for filename in train_files:
@@ -196,9 +195,9 @@ def create_dataloaders(data_dir: str, batch_size: int = 32, max_length: int = 51
     Returns: (train_loader, val_loader, test_loader)
     """
     
-    file_sequences: Dict[str, List[ProteinSequence]] = load_protein_data(
-        data_dir, 
-        max_files=max_files, 
+    file_sequences: Dict[str, List[Dict]] = load_protein_data(
+        data_dir,
+        max_files=max_files,
         sequences_per_file=sequences_per_file
     )
     
