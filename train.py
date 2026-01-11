@@ -8,7 +8,7 @@ from datetime import datetime
 import argparse
 
 from data import create_dataloaders
-from model import ProteinBERT
+from model import create_model
 from config import Config
 
 class LearningRateScheduler:
@@ -98,7 +98,7 @@ def train_model(resume_from=None):
     print(f"train batches: {len(train_loader)}, Val batches: {len(val_loader)}, Test batches: {len(test_loader)}")
     print("="*25)
 
-    model = ProteinBERT(
+    model = create_model(
         vocab_size=Config.VOCAB_SIZE,
         d_model=Config.D_MODEL,
         n_layers=Config.N_LAYERS,
@@ -109,11 +109,6 @@ def train_model(resume_from=None):
     )
     model = torch.compile(model)
     model = model.to(device)
-
-
-    total_params = sum(p.numel() for p in model.parameters())
-    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Model w/ {total_params:,} total parameters & ({trainable_params:,} trainable)")
 
     optimizer = optim.AdamW(
         model.parameters(),

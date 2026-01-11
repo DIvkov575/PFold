@@ -77,3 +77,23 @@ class ProteinBERT(nn.Module):
                 pooled = torch.mean(output['hidden_states'], dim=1)
             
             return pooled
+
+def create_model(vocab_size: int = 24, d_model: int = 256, n_layers: int = 6,
+                n_heads: int = 8, d_ff: int = 1024, max_length: int = 512,
+                dropout: float = 0.1) -> ProteinBERT:
+    model = ProteinBERT(
+        vocab_size=vocab_size,
+        d_model=d_model,
+        n_layers=n_layers,
+        n_heads=n_heads,
+        d_ff=d_ff,
+        max_length=max_length,
+        dropout=dropout
+    )
+
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    print(f"Model w/ {total_params:,} total parameters & ({trainable_params:,} trainable)")
+
+    return model
