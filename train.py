@@ -85,20 +85,8 @@ def evaluate_model(model, val_loader, device):
     return avg_loss, accuracy
 
 def train_model(resume_from=None):
-    print("=== Conf ============")
-    print(f"Data directory: {Config.DATA_DIR}")
-    print(f"Max sequence length: {Config.MAX_LENGTH}")
-    print(f"Vocabulary size: {Config.VOCAB_SIZE}")
-    print(f"Model dimension: {Config.D_MODEL}")
-    print(f"Number of layers: {Config.N_LAYERS}")
-    print(f"Number of heads: {Config.N_HEADS}")
-    print(f"Batch size: {Config.BATCH_SIZE}")
-    print(f"Learning rate: {Config.LEARNING_RATE}")
-    print(f"Device: {Config.DEVICE}")
-    print("=====================")
-
     device = Config.DEVICE
-    print(f"Training on device: {device}")
+    print(f"device: {device}")
     
     train_loader, val_loader, test_loader = create_dataloaders(
         Config.DATA_DIR,
@@ -107,7 +95,8 @@ def train_model(resume_from=None):
         max_files=Config.MAX_FILES
     )
     
-    print(f"Train batches: {len(train_loader)}, Val batches: {len(val_loader)}, Test batches: {len(test_loader)}")
+    print(f"train batches: {len(train_loader)}, Val batches: {len(val_loader)}, Test batches: {len(test_loader)}")
+    print("="*25)
 
     model = ProteinBERT(
         vocab_size=Config.VOCAB_SIZE,
@@ -117,11 +106,13 @@ def train_model(resume_from=None):
         d_ff=Config.D_FF,
         max_length=Config.MAX_LENGTH,
         dropout=Config.DROPOUT
-    ).to(device)
+    )
+    torch.compile(model)
+    model = model.to(device)
+
 
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Model w/ {total_params:,} total parameters & ({trainable_params:,} trainable)")
     
     optimizer = optim.AdamW(
         model.parameters(),
@@ -136,7 +127,7 @@ def train_model(resume_from=None):
     global_step = 0
     if resume_from and os.path.exists(resume_from):
         start_epoch, global_step, _ = load_checkpoint(resume_from, model, optimizer)
-        print(f"Resumed from epoch {start_epoch}, step {global_step}")
+        print(f"resume from epoch {start_epoch}, step {global_step}")
     
     os.makedirs(Config.MODEL_DIR, exist_ok=True) # dir for checkpoints
     
@@ -175,11 +166,11 @@ def train_model(resume_from=None):
             # log 
             if global_step % Config.LOG_INTERVAL == 0:
                 avg_loss = epoch_loss / (batch_idx + 1)
-                print(f"Epoch {epoch+1}/{Config.MAX_EPOCHS}, "
+                print(f"poch {epoch+1}/{Config.MAX_EPOCHS}, "
                       f"Step {global_step}, "
-                      f"Batch {batch_idx+1}/{len(train_loader)}, "
-                      f"Loss: {loss.item():.4f}, "
-                      f"Avg Loss: {avg_loss:.4f}, "
+                      f"batch {batch_idx+1}/{len(train_loader)}, "
+                      f"loss: {loss.item():.4f}, "
+                      f"avg loss: {avg_loss:.4f}, "
                       f"LR: {lr:.2e}")
                 
                 writer.add_scalar('Loss/Train_Step', loss.item(), global_step)
@@ -194,13 +185,13 @@ def train_model(resume_from=None):
         epoch_time = time.time() - start_time
         avg_train_loss = epoch_loss / len(train_loader)
         
-        print(f"\nEpoch {epoch+1} completed in {epoch_time:.2f}s")
-        print(f"Average training loss: {avg_train_loss:.4f}")
+        print(f"\nepoch {epoch+1} completed in {epoch_time:.2f}s")
+        print(f"average training loss: {avg_train_loss:.4f}")
         
         # validation
         val_loss, val_accuracy = evaluate_model(model, val_loader, device)
         
-        print(f"Validation loss: {val_loss:.4f}, accuracy: {val_accuracy:.4f}")
+        print(f"val loss: {val_loss:.4f}, accuracy: {val_accuracy:.4f}")
         
         # tensorboard
         writer.add_scalar('Loss/Train_Epoch', avg_train_loss, epoch)
@@ -220,7 +211,7 @@ def train_model(resume_from=None):
     
     writer.close()
 
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train Protein BERT')
     parser.add_argument('--resume', type=str, help='Path to checkpoint to resume from')
     parser.add_argument('--max_files', type=int, default=Config.MAX_FILES, help='Maximum number of files to process')
@@ -238,6 +229,3 @@ def main():
 
     
     train_model(resume_from=args.resume)
-
-if __name__ == "__main__":
-    main()

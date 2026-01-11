@@ -3,7 +3,7 @@ class Config:
     # Data settings
     DATA_DIR = "/Users/dmitriyivkov/datasets/boltz/rcsb_processed_msa"
     MAX_LENGTH = 512
-    MAX_FILES = 5000# #npz files to process (significantly more for diversity)
+    MAX_FILES = 500# #npz files to process (significantly more for diversity)
     SEQUENCES_PER_FILE = 4  # Number of sequences to extract per file
     MASK_PROB = 0.15  # masking probability
     
@@ -28,6 +28,7 @@ class Config:
     MODEL_DIR = "checkpoints"
     
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+    # DEVICE = "mps"
 
 # Amino acid vocabulary mapping (for reference)
 AA_VOCAB = {
