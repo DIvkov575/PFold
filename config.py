@@ -1,9 +1,9 @@
 import torch
 class Config:
     # Data settings
-    DATA_DIR = "/Users/dmitriyivkov/datasets/boltz/rcsb_processed_msa"
+    DATA_DIR = "/home/dima/data/boltz/rcsb_processed_msa/"
     MAX_LENGTH = 512
-    MAX_FILES = 500# #npz files to process (significantly more for diversity)
+    MAX_FILES = 5000# #npz files to process (significantly more for diversity)
     SEQUENCES_PER_FILE = 4  # Number of sequences to extract per file
     MASK_PROB = 0.15  # masking probability
     
@@ -15,9 +15,9 @@ class Config:
     DROPOUT = 0.1
     
     BATCH_SIZE = 64
-    LEARNING_RATE = 1e-4
+    LEARNING_RATE = 2e-4
     WARMUP_STEPS = 1000
-    MAX_EPOCHS = 30
+    MAX_EPOCHS = 500 
     TRAIN_SPLIT = 0.8
     
     WEIGHT_DECAY = 0.01
