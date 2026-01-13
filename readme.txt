@@ -1,6 +1,7 @@
 TODO
 - "He" init instead of Xavier
 - Increase model capacity
+- Improve LR scheduling
 
 
 
