@@ -5,15 +5,22 @@ import math
 from typing import Optional
 
 class ProteinBERT(nn.Module):
-    def __init__(self, vocab_size: int = 24, d_model: int = 256, n_layers: int = 6, 
+    def __init__(self, vocab_size: int = 24, d_model: int = 256, n_layers: int = 6,
                  n_heads: int = 8, d_ff: int = 1024, max_length: int = 512, dropout: float = 0.1):
         super().__init__()
-        
+
         self.d_model = d_model
         self.vocab_size = vocab_size
-        
+
         self.embedding = nn.Embedding(vocab_size, d_model, padding_idx=0)
-        self.pos_encoding = nn.Parameter(torch.randn(max_length, d_model))
+
+        # Create sinusoidal positional encoding
+        pe = torch.zeros(max_length, d_model)
+        position = torch.arange(0, max_length, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer('pos_encoding', pe)
         
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=d_model,

@@ -3,7 +3,8 @@ class Config:
     # Data settings
     DATA_DIR = "/home/dima/data/boltz/rcsb_processed_msa/"
     MAX_LENGTH = 512
-    MAX_FILES = 50000# #npz files to process (significantly more for diversity)
+    # MAX_FILES = 50_000# #npz files to process 
+    MAX_FILES = 151040 # (128 * 1180) actual = 151409
     SEQUENCES_PER_FILE = 4  # Number of sequences to extract per file
     MASK_PROB = 0.15  # masking probability
     
@@ -15,7 +16,7 @@ class Config:
     DROPOUT = 0.1
     
     BATCH_SIZE = 128
-    LEARNING_RATE = 2e-4
+    LEARNING_RATE = 4e-4
     WARMUP_STEPS = 1000
     MAX_EPOCHS = 750 
     TRAIN_SPLIT = 0.8
