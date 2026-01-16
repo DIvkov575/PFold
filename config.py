@@ -16,9 +16,9 @@ class Config:
     DROPOUT = 0.1
     
     BATCH_SIZE = 128
-    LEARNING_RATE = 4e-4
+    LEARNING_RATE = 8e-4
     WARMUP_STEPS = 1000
-    MAX_EPOCHS = 750 
+    MAX_EPOCHS = 50
     TRAIN_SPLIT = 0.8
     
     WEIGHT_DECAY = 0.01
